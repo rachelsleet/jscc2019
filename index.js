@@ -4,23 +4,26 @@ Project campaign doesn't have to require a real pitch/be fully fleshed out yet.
  */
 
 Idea = class {
-  constructor(title, creator, details = "") {
+  constructor(title, creator, details = '') {
     this.title = title;
     this.details = details;
     this.creator = creator;
     this.supporters = { financial: [], time: [] };
     this.comments = [];
 
-    creator.ideas.creator.push(this);
+    creator.ownIdeas.push(this);
   }
 
   printIdea() {
-    console.log(`${this.title} by ${this.creator.name}\n\n${this.details || "More details coming soon..."}\n\nMany thanks to the supporters:\n${[
-      ...this.supporters.financial,
-      ...this.supporters.time
-    ]
-      .map(s => s.name)
-      .join(", ")}`);
+    console.log(
+      `${this.title} by ${this.creator.name}\n\n${this.details ||
+        'More details coming soon...'}\n\nMany thanks to the supporters:\n${[
+        ...this.supporters.financial,
+        ...this.supporters.time
+      ]
+        .map(s => s.name)
+        .join(', ')}`
+    );
   }
 
   printComments(n = this.comments.length) {
@@ -28,21 +31,22 @@ Idea = class {
       this.comments
         .map(c => `${c.message}\n${c.author.name}, ${c.time.toString()}`)
         .slice(0, n)
-        .join("\n\n")
+        .join('\n\n')
     );
   }
 };
 
 Person = class {
-  constructor(name, bio = "") {
+  constructor(name, bio = '') {
     this.name = name;
     this.bio = bio;
-    this.ideas = { creator: [], financial: [], time: [] };
+    this.ownIdeas = [];
+    this.supportedIdeas = { financial: [], time: [] };
   }
 
   supportIdea(idea, type) {
     idea.supporters[type].push(this);
-    this.ideas[type].push(idea);
+    this.supportedIdeas[type].push(idea);
   }
 
   commentOnIdea(idea, message) {
@@ -50,14 +54,20 @@ Person = class {
   }
 };
 
-rachel = new Person("Rachel", "Budding developer in Berlin");
-cleanUp = new Idea("Clean up the streets!", rachel);
+rachel = new Person('Rachel', 'Budding developer in Berlin');
+cleanUp = new Idea('Clean up the streets!', rachel);
 
-christian = new Person("Christian");
-christian.supportIdea(cleanUp, "time");
+christian = new Person('Christian');
+christian.supportIdea(cleanUp, 'time');
 
-christian.commentOnIdea(cleanUp, "Nice idea! I'm a graphic designer, do you need any materials?");
-rachel.commentOnIdea(cleanUp, "Thanks, yes that would be amazing. Let's set up coffee to discuss details.");
+christian.commentOnIdea(
+  cleanUp,
+  "Nice idea! I'm a graphic designer, do you need any materials?"
+);
+rachel.commentOnIdea(
+  cleanUp,
+  "Thanks, yes that would be amazing. Let's set up coffee to discuss details."
+);
 
 cleanUp.printIdea();
 cleanUp.printComments();
